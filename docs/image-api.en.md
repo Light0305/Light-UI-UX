@@ -1,6 +1,6 @@
 # Image configuration
 
-[Back to README](../README.en.md) · [简体中文](image-api.zh-CN.md)
+[Back to README](../README.md) · [简体中文](image-api.zh-CN.md)
 
 ## Channel priority
 

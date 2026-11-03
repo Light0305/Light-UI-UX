@@ -1,6 +1,6 @@
 # 生图配置
 
-[返回 README](../README.md) · [English](image-api.en.md)
+[返回 README](../README.zh-CN.md) · [English](image-api.en.md)
 
 ## 调用顺序
 

@@ -10,7 +10,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parent.parent
 ROOT_FILES = (
-    "SKILL.md", "README.md", "README.en.md", "LICENSE",
+    "SKILL.md", "README.md", "README.zh-CN.md", "LICENSE",
     "THIRD_PARTY_NOTICES.md", ".light-ui-ux.example.json", ".gitignore", ".gitattributes",
 )
 PUBLIC_TREES = {
