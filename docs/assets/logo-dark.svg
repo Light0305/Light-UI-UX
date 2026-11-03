@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="435" height="108" viewBox="0 0 435 108" role="img" aria-labelledby="title">
+  <title id="title">Light-UI-UX</title>
+  <g transform="translate(10 22) scale(1.6)">
+    <path d="M8 5h9v21h18v9H8z" fill="#f5f6fa"/>
+    <path d="M23 5h12v12H23z" fill="#3358ec"/>
+  </g>
+  <text x="94" y="75" fill="#f5f6fa" font-family="Arial, Helvetica, sans-serif" font-size="62" font-weight="700" letter-spacing="-2">Light-UI-UX</text>
+</svg>

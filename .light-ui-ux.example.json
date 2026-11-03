@@ -1,0 +1,6 @@
+{
+  "api_url": "https://your-api.example/v1/images/generations",
+  "api_key": "",
+  "model": "YOUR_IMAGE_MODEL_ID",
+  "provider": "openai-compatible"
+}

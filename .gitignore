@@ -1,0 +1,26 @@
+# Raw local research resources (compiled into assets/light-arsenal.db)
+资源/
+
+# Local website and original demo projects are maintained separately.
+/website/
+/examples/
+
+# Ephemeral inspection & preview outputs
+.light-ui/
+.tmp-*/
+style-explorer.html
+_light_masked_temp.html
+
+# User API keys & local config
+.env
+.env.*
+!.env.example
+.light-ui-ux.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+node_modules/
+dist/
