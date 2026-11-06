@@ -78,6 +78,8 @@ When presenting **4–7 parallel items** that each carry rich visuals or preview
 
 When extracting a component from `light-arsenal.db` (`python scripts/arsenal.py component --id <id> --extract <dir>`) and adapting it to the user's target stack, enforce these stack-specific contracts:
 
+For BoardUI or LeiBox resources, first read [component sources](09-component-sources.md). Use an existing native framework package before writing a port. BoardUI is a separate **React Aria** component family: preserve its providers, keyboard behavior, focus handling, `cx()` utility and semantic tokens; do not substitute Base UI or Radix trigger props. Map tokens into the target design rather than applying the upstream brand or agent rules globally. LeiBox wrappers can share an engine or retain React dependencies, so inspect the selected package's manifest.
+
 ### 4.1 React 19 / Next.js App Router / Tailwind v4 / `shadcn`
 Run `python scripts/arsenal.py stack shadcn` and `python scripts/arsenal.py stack nextjs`.
 1. **Base UI (`@base-ui/react`) vs. Radix UI (`radix-ui`) Strict Separation**:

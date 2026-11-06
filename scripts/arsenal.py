@@ -13,7 +13,7 @@ import re
 import sqlite3
 import sys
 import zlib
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 # Ensure UTF-8 stdout on Windows PowerShell/CMD
 if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
@@ -83,16 +83,23 @@ def cmd_stats(args):
     counts = {}
     for t in tables:
         counts[t] = cur.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0]
+    sources = [dict(row) for row in cur.execute(
+        "SELECT site, count(*) AS entries, sum(redistribution_mode='full_source') AS full_source, "
+        "sum(redistribution_mode='metadata_only') AS metadata_only FROM components GROUP BY site ORDER BY site"
+    )]
     size_mb = round(DB_PATH.stat().st_size / (1024 * 1024), 2)
     conn.close()
 
     if args.json:
-        print(json.dumps({"db_path": str(DB_PATH), "db_size_mb": size_mb, "table_counts": counts}, indent=2, ensure_ascii=False))
+        print(json.dumps({"db_path": str(DB_PATH), "db_size_mb": size_mb, "table_counts": counts, "component_sources": sources}, indent=2, ensure_ascii=False))
         return
 
     print(f"=== Light-UI-UX Local Arsenal (`{DB_PATH.name}` — {size_mb} MB) ===")
     for k, v in counts.items():
         print(f"  • {k:<25}: {v:,} records")
+    print("\nComponent libraries (entries / bundled source / upstream references):")
+    for source in sources:
+        print(f"  • {source['site']:<18}: {source['entries']} / {source['full_source']} / {source['metadata_only']}")
 
 
 def cmd_benchmark(args):
@@ -237,12 +244,21 @@ def cmd_component(args):
             print(f"[WARN] Component '{args.id}' not found.")
             return
         d = dict(row)
+        d["frameworks"] = [name for name in d.get("frameworks", "").split(",") if name]
+        d["dependencies"] = json.loads(d.pop("dependencies_json", "") or "{}")
+        d["source_metadata"] = json.loads(d.pop("source_meta_json", "") or "{}")
+        if args.framework and args.framework not in d["frameworks"]:
+            raise ValueError(f"'{d['id']}' has no indexed {args.framework} package; check its upstream details.")
         fmap = json.loads(d.pop("file_map_json") or "{}")
         files_content = {}
         for rel_path, sha in fmap.items():
             blob_row = cur.execute("SELECT zlib_content FROM component_blobs WHERE sha256 = ?", (sha,)).fetchone()
             if blob_row:
                 files_content[rel_path] = zdecomp(blob_row["zlib_content"])
+
+        if args.framework and d["site"] == "leibox":
+            files_content = {name: content for name, content in files_content.items()
+                             if name.startswith(args.framework + "/") or name == "_LIGHT_UI_SOURCE.json"}
 
         library_license = WORKSPACE_ROOT / "licenses" / "components" / f"{d['site']}.txt"
         has_license = any(re.match(r"(?:licen[sc]e|notice|copying)", Path(name).name, re.I) for name in files_content)
@@ -251,10 +267,23 @@ def cmd_component(args):
 
         if args.extract:
             out_dir = Path(args.extract) / d["id"]
+            destinations = []
             for rel_path, code in files_content.items():
+                source_path = PurePosixPath(rel_path)
+                if (not rel_path or "\\" in rel_path or ":" in rel_path or "\x00" in rel_path
+                        or source_path.is_absolute() or ".." in source_path.parts):
+                    raise ValueError(f"Unsafe component source path: {rel_path!r}")
                 dest = out_dir / rel_path
+                if not dest.resolve().is_relative_to(out_dir.resolve()):
+                    raise ValueError(f"Source path escapes extraction directory: {rel_path!r}")
+                if dest.exists() and (not dest.is_file() or dest.read_bytes() != code.encode("utf-8")):
+                    raise ValueError(f"Existing file differs; choose a new extraction directory or merge it: {dest}")
+                destinations.append((dest, code))
+            # Preflight every file before creating any output or changing existing files.
+            for dest, code in destinations:
                 dest.parent.mkdir(parents=True, exist_ok=True)
-                dest.write_text(code, encoding="utf-8")
+                if not dest.exists():
+                    dest.write_bytes(code.encode("utf-8"))
             if not args.json:
                 if files_content:
                     print(f"[OK] Extracted {len(files_content)} files for '{d['id']}' to {out_dir}")
@@ -272,6 +301,12 @@ def cmd_component(args):
         print(f"Description: {d['description']}")
         if d["source_url"]:
             print(f"Upstream URL: {d['source_url']}")
+        if d["frameworks"]:
+            print(f"Frameworks: {', '.join(d['frameworks'])}")
+        if d["dependencies"]:
+            print(f"Dependencies: {json.dumps(d['dependencies'], ensure_ascii=False)}")
+        if d["source_metadata"]:
+            print(f"Source / integration metadata: {json.dumps(d['source_metadata'], ensure_ascii=False)}")
         for rel_path, code in files_content.items():
             print(f"\n--- File: {rel_path} ({len(code.splitlines())} lines) ---")
             print("\n".join(code.splitlines()[:60]))
@@ -285,6 +320,16 @@ def cmd_component(args):
     if args.site:
         where_sql = "AND c.site = ?"
         params.append(args.site)
+    columns = {row[1] for row in cur.execute("PRAGMA table_info(components)")}
+    framework_column = "c.frameworks" if "frameworks" in columns else "'' AS frameworks"
+    if args.framework:
+        if "frameworks" not in columns:
+            raise ValueError("This arsenal has no framework metadata; import the inspected component snapshots first.")
+        where_sql += " AND instr(',' || c.frameworks || ',', ',' || ? || ',') > 0"
+        params.append(args.framework)
+    if args.mode:
+        where_sql += " AND c.redistribution_mode = ?"
+        params.append(args.mode)
 
     rows = []
     if q:
@@ -293,7 +338,7 @@ def cmd_component(args):
             rows = cur.execute(
                 f"""
                 SELECT c.id, c.site, c.name, c.name_zh, c.categories, c.license,
-                       c.redistribution_mode, c.tags, c.description, c.file_count
+                       c.redistribution_mode, c.tags, c.description, c.file_count, c.source_url, {framework_column}
                 FROM components_fts f
                 JOIN components c ON f.id = c.id
                 WHERE components_fts MATCH ? {where_sql}
@@ -304,12 +349,12 @@ def cmd_component(args):
             ).fetchall()
         except Exception:
             rows = []
-        if not rows:
+        if not rows or re.search(r"[\u3400-\u9fff]", q):
             lp = f"%{q}%"
-            rows = cur.execute(
+            substring_rows = cur.execute(
                 f"""
                 SELECT c.id, c.site, c.name, c.name_zh, c.categories, c.license,
-                       c.redistribution_mode, c.tags, c.description, c.file_count
+                       c.redistribution_mode, c.tags, c.description, c.file_count, c.source_url, {framework_column}
                 FROM components c
                 WHERE (c.name LIKE ? OR c.name_zh LIKE ? OR c.categories LIKE ? OR c.tags LIKE ? OR c.description LIKE ?)
                 {where_sql}
@@ -317,11 +362,13 @@ def cmd_component(args):
                 """,
                 [lp, lp, lp, lp, lp] + params + [args.limit],
             ).fetchall()
+            seen_ids = {row["id"] for row in rows}
+            rows = (rows + [row for row in substring_rows if row["id"] not in seen_ids])[:args.limit]
     else:
         rows = cur.execute(
             f"""
             SELECT c.id, c.site, c.name, c.name_zh, c.categories, c.license,
-                   c.redistribution_mode, c.tags, c.description, c.file_count
+                   c.redistribution_mode, c.tags, c.description, c.file_count, c.source_url, {framework_column}
             FROM components c
             WHERE 1=1 {where_sql}
             LIMIT ?
@@ -337,7 +384,7 @@ def cmd_component(args):
     print(f"=== Found {len(res)} Compliant Interactive Components (query='{q}') ===")
     for r in res:
         print(
-            f"  • [{r['id']}] {r['name']} ({r['name_zh']}) | {r['site']} | {r['categories']} | {r['tags']} | files={r['file_count']}"
+            f"  • [{r['id']}] {r['name']} ({r['name_zh']}) | {r['site']} | {r['categories']} | {r['redistribution_mode']} | frameworks={r['frameworks'] or 'unindexed'} | files={r['file_count']}"
         )
         if r["description"]:
             print(f"    {r['description'][:140]}")
@@ -703,9 +750,11 @@ def main():
     p_bench.add_argument("--export-css", help="Export CSS Custom Properties to file")
     p_bench.add_argument("--export-tailwind", help="Export Tailwind v4 @theme block to file")
 
-    p_comp = sub.add_parser("component", help="Search 1,140 compliant interactive components")
+    p_comp = sub.add_parser("component", help="Search interactive components, source bundles and upstream references")
     p_comp.add_argument("query", nargs="?", default="", help="Component search query")
-    p_comp.add_argument("--site", help="Filter by upstream library (e.g., reactbits, bundui, animata, cult-ui)")
+    p_comp.add_argument("--site", help="Filter by upstream library (e.g., boardui, leibox, bundui, animata)")
+    p_comp.add_argument("--framework", choices=["react", "vue", "svelte", "solid", "preact", "vanilla"], help="Filter explicitly indexed frameworks; with --id select a framework package")
+    p_comp.add_argument("--mode", choices=["full_source", "metadata_only"], help="Filter bundled source vs upstream reference entries")
     p_comp.add_argument("--limit", type=int, default=8)
     p_comp.add_argument("--id", help="View component details & source files")
     p_comp.add_argument("--extract", help="Extract full component source tree into directory")
@@ -763,7 +812,10 @@ def main():
         "industry": cmd_industry,
         "stack": cmd_stack,
     }
-    dispatch[args.cmd](args)
+    try:
+        dispatch[args.cmd](args)
+    except (ValueError, OSError, sqlite3.Error) as exc:
+        parser.exit(2, f"[ERROR] {exc}\n")
 
 
 if __name__ == "__main__":

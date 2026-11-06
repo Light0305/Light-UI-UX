@@ -103,13 +103,21 @@ Skill 脚本需要 **Python 3.10+**，无需安装第三方 Python 包。截图�
 | 资源 | 数量 |
 | --- | ---: |
 | 网站与获奖作品设计参考 | 1,544 |
-| 交互组件索引 | 1,140 |
+| 交互组件索引 | 1,250 |
 | 动效提示词与配方 | 660 |
 | SVG 图标 | 33,253 |
 | 品牌设计系统 | 152 |
 | 技术栈指南 | 22 个技术栈 |
 
 组件索引包含可提取源码和原站链接，各项资源保留其原有许可。设计方法见 [SKILL.md](SKILL.md)，分项说明见 [references](references)。
+
+现已加入 **68 项 BoardUI 源码资源**，覆盖 AI 对话、应用控件、数据网格、设置面板和设计基础；另有 **42 项 LeiBox 交互索引**。其中明确标注 MIT 的“字符鲨鱼与鱼群”带有 React、Vue、Svelte、Solid、Preact 和 Vanilla 六框架完整代码包，其余 41 项保留原站资源入口。全库共 **945 项源码资源、305 项原站引用**，提取时保留依赖信息与来源声明。[检索与接入方法](references/09-component-sources.md)。
+
+```sh
+python scripts/arsenal.py component "对话" --site boardui --framework react --mode full_source
+python scripts/arsenal.py component "拖拽" --site leibox --framework vue
+python scripts/arsenal.py component --id boardui-data-grid --extract ./staging
+```
 
 ### 自定义生图模型
 

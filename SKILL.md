@@ -5,7 +5,7 @@ description: Next-generation full-stack UI/UX design & engineering system powere
 
 # Light-UI-UX — Full-Stack Design & Engineering Orchestrator
 
-You are operating **Light-UI-UX**, an evidence-driven UI/UX design and engineering system backed by a local zero-dependency SQLite FTS5 arsenal ([`assets/light-arsenal.db`](assets/light-arsenal.db), queried via [`scripts/arsenal.py`](scripts/arsenal.py)) containing **1,544 real-world website & award specs**, **1,140 interactive component references** (876 with source; 264 upstream links), **660 motion prompts & recipes**, **33,253 compliant vector SVGs**, **16 standalone WebGL2/Three.js shader stages**, **152 brand `DESIGN.md` systems**, **413 industry reasoning profiles**, and **1,395 cross-stack engineering rules**.
+You are operating **Light-UI-UX**, an evidence-driven UI/UX design and engineering system backed by a local zero-dependency SQLite FTS5 arsenal ([`assets/light-arsenal.db`](assets/light-arsenal.db), queried via [`scripts/arsenal.py`](scripts/arsenal.py)) containing **1,544 real-world website & award specs**, **1,250 interactive component references** (945 with source; 305 upstream links), **660 motion prompts & recipes**, **33,253 compliant vector SVGs**, **16 standalone WebGL2/Three.js shader stages**, **152 brand `DESIGN.md` systems**, **413 industry reasoning profiles**, and **1,395 cross-stack engineering rules**.
 
 ---
 
@@ -18,8 +18,12 @@ You are operating **Light-UI-UX**, an evidence-driven UI/UX design and engineeri
    python scripts/arsenal.py industry "<domain_keyword>"
    # 2. Retrieve 3 real-world website benchmark specs (1,544 sites)
    python scripts/arsenal.py benchmark "<style_or_domain>" --theme light|dark --limit 3
-   # 3. Search & extract real interactive component source code (1,140 components)
+   # 3. Search & extract interactive components (1,250 indexed entries)
    python scripts/arsenal.py component "<pattern_keyword>"
+   # Product controls / AI chat: BoardUI source with internal imports and styles
+   python scripts/arsenal.py component "<task_keyword>" --site boardui --framework react --mode full_source
+   # Expressive interaction: LeiBox framework-aware source and upstream references
+   python scripts/arsenal.py component "<interaction_keyword>" --site leibox --framework vue
    # 4. Search & extract compliant vector SVG icons (33,253 SVGs — NEVER use Emoji as UI icons)
    python scripts/arsenal.py icon "<keyword_zh_or_en>"
    # 5. Check target tech-stack rules (22 stacks, 1,395 rules)
@@ -88,7 +92,7 @@ Follow the **5-Step Agile Creation Pipeline** (detailed in [`references/01-bench
    - Export or synthesize the chosen benchmark's `:root` CSS Custom Properties / Tailwind v4 `@theme` tokens (`arsenal.py benchmark --id <id> --export-tailwind`).
    - Lock the layout skeleton (`references/01-benchmark-selection.md`) and verify WCAG AA contrast (`≥ 4.5:1` body, `≥ 3.0:1` large type).
 3. **Step 3 — Arsenal Assembly & Adaptive Media Generation**:
-   - Pull matching interactive components (`arsenal.py component`), vector icons (`arsenal.py icon`), and optional WebGL stage (`arsenal.py shader`).
+   - Pull matching interactive components (`arsenal.py component`), vector icons (`arsenal.py icon`), and optional WebGL stage (`arsenal.py shader`). For product controls, agentic chat, grids, and settings, check BoardUI; for expressive interactions, check LeiBox. Read [component sources and integration](references/09-component-sources.md) when using either library. Prefer native framework packages when present, preserve internal imports and source notices, and adapt their semantic tokens to the target product.
    - When custom photography/illustration/plates are needed, execute the **3-Tier Adaptive Image Pipeline** via [`scripts/media_gen.py`](scripts/media_gen.py) and blend images using the **6-Step Page-Blending Law** ([`references/05-media-and-imagegen.md`](references/05-media-and-imagegen.md)).
    - **Host-first routing**: If an actual host image-generation tool is available, use it first, even when a custom API key is configured. If no host tool is available, use `generate --tier auto --host-unavailable` to select the configured API or the CC0 fallback. Honor an explicit user choice of provider. The script's host response is a prompt/delegation contract, not an image; invoke the host tool and verify the saved image before reporting generation as complete.
 4. **Step 4 — Production Implementation & Mandatory Motion**:
@@ -112,7 +116,7 @@ Follow the **Two-Round Non-Destructive Protocol** ([`references/06-polish-and-re
 Follow the **5-Element Component Craft & Transpilation Protocol** ([`references/04-motion-and-components.md`](references/04-motion-and-components.md)):
 1. Define the **5 Component Elements**: ① User's 1-sentence question, ② Primary changing quantity (Protagonist), ③ Supporting metadata only when needed for a decision, ④ Single primary gesture + physical feel (drag/press/scrub + snap damping), ⑤ Complete state matrix (`default / hover / active / focus / loading / empty / error / extreme-values`).
 2. Enforce the **Single-Ruler Law** (never draw both a read-only progress bar and a separate slider; merge into one interactive track) and **Number-Deduplication Law** (never repeat the same number in title, slider, and caption).
-3. Search `arsenal.py component` for the closest high-craft reference, extract its source (`--extract`), and transpile 1:1 into the user's target stack (React/shadcn Base vs Radix, Vue 3 SFC, React Native Reanimated, SwiftUI, or Flutter) while preserving exact spring physics and DOM/layer geometry.
+3. Search `arsenal.py component` for the closest high-craft reference. Prefer an existing native package (`--framework`) before transpiling; extract bundled source with `--extract`. For BoardUI, preserve React Aria semantics; for LeiBox, inspect the actual renderer and dependencies rather than assuming every framework wrapper is dependency-free. Follow [component sources and integration](references/09-component-sources.md). When a port is required, preserve interaction intent and equivalent motion while using the target platform's accessibility, lifecycle, and layout APIs.
 
 ### Scenario D: Direct Local Arsenal Query & Extraction
 When the user asks to browse or pull benchmarks, components, icons, shaders, or brand systems directly, run `scripts/arsenal.py` and deliver clean, copy-ready code or extracted files immediately.
@@ -132,9 +136,11 @@ Load only the reference manual required for your active phase:
 | [`references/05-media-and-imagegen.md`](references/05-media-and-imagegen.md) | Generating images (Tier 1 Host / Tier 2 Custom API / Tier 3 CC0 + WebGL), crafting Atelier Zero prompts, IP-as-Logo icons, or blending media into web layouts |
 | [`references/06-polish-and-redesign.md`](references/06-polish-and-redesign.md) | Auditing and refactoring an existing project or eliminating AI template feel |
 | [`references/07-visual-blind-review.md`](references/07-visual-blind-review.md) | Capturing multi-viewport evidence packages and dispatching the isolated Visual & UX Blind-Review Subagents |
+| [`references/09-component-sources.md`](references/09-component-sources.md) | Choosing BoardUI/LeiBox resources, filtering frameworks, extracting complete source closures, mapping semantic tokens, and integrating agentic UI or expressive interactions |
 
 ### Built-In Zero-Dependency Python CLI Tools (`scripts/`)
-- [`scripts/arsenal.py`](scripts/arsenal.py): Millisecond search & extraction across all 9 tables in `assets/light-arsenal.db`.
+- [`scripts/arsenal.py`](scripts/arsenal.py): Local search and extraction, including component library/framework/source-mode filters and source/dependency metadata.
+- [`scripts/import_components.py`](scripts/import_components.py): Maintainer tool to merge inspected BoardUI/LeiBox snapshots into the existing database, with dependency closure, hash checks, and repeat-safe source indexing. See [component sources](references/09-component-sources.md#maintaining-the-import).
 - [`scripts/media_gen.py`](scripts/media_gen.py): 3-tier adaptive image generation (`host` / `api` / `cc0`), Atelier Zero optical prompt builder, `3×3` `calm` text-zone pixel analyzer, and `@2x` responsive image post-processor.
 - [`scripts/style_explorer.py`](scripts/style_explorer.py): Generates a standalone single-file `style-explorer.html` for interactive 3-direction side-by-side comparison.
 - [`scripts/inspect_ui.py`](scripts/inspect_ui.py): Headless browser multi-viewport screenshotter (`1440×900`, `@2x`, `390×844`, `--mask` text-masked view, `--mark` issue callouts) and 67-rule DOM/CSS linter.

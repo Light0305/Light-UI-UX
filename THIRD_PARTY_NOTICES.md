@@ -4,7 +4,7 @@ Original Light-UI-UX code and documentation are licensed under MIT. Third-party 
 
 ## Components
 
-The component index contains 1,140 entries: 876 with bundled source and 264 with metadata and an upstream link only. Bundled components retain license files inside their source maps where available. Additional full license texts are in [licenses/components](licenses/components).
+The component index contains 1,250 entries: 945 with bundled source and 305 with metadata and an upstream link only. Bundled components retain license files inside their source maps where available. Additional full license texts are in [licenses/components](licenses/components).
 
 | Source | Bundled entries | License text |
 | --- | ---: | --- |
@@ -19,6 +19,10 @@ The component index contains 1,140 entries: 876 with bundled source and 264 with
 | Orb / shader components | 13 | [MIT](licenses/components/orb.txt) |
 | Public CodePen examples | 2 | [Example license](licenses/components/codepen.txt) |
 | Liquid Glass | 1 | [MIT](licenses/components/liquid-glass.txt) |
+
+**BoardUI (68 source entries):** React components and foundations from [BoardUI/boardui](https://github.com/BoardUI/boardui), revision `ec5c5eb3e29c2441be63b9422cd54f411ef23466`, under [MIT](licenses/components/boardui.txt). Each extraction includes its transitive local imports, shared CSS, the full upstream MIT notice and a source/dependency manifest. Only source present in the public repository is bundled; Pro source and public demo media are not included.
+
+**LeiBox (42 indexed entries; 1 with source):** catalog revision `42a55345cc9f53e6ab926a62527e0bc0ad9db7bc` from [leishifu666/LeiBox](https://github.com/leishifu666/LeiBox). The explicitly MIT-attributed ASCII Sharks component includes six framework packages, embedded font/icon notices and per-file SHA-256 verification. Its original simulation credits drewdi / [stackedlol/ascii-sharks](https://github.com/stackedlol/ascii-sharks), revision `a0074c16a106f0abc665fe9712ca445f8f98ad8e`. Live package hashes are recorded separately from the pinned catalog. Other entries retain search metadata and upstream package/documentation URLs only. LeiBox's root MIT + Commons Clause and per-item provenance do not establish a blanket redistribution license; the catalog's canRedistributeSource flag alone is not treated as one. Full statements: [root license](licenses/components/leibox-LICENSE.md), [source statement](licenses/components/leibox-COPYRIGHT.md).
 
 Reference-only entries do not bundle component source:
 

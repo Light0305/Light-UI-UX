@@ -6,6 +6,7 @@ Builds `assets/light-arsenal.db` and `THIRD_PARTY_NOTICES.md` from `资源/`.
 Zero third-party Python dependencies required (uses built-in sqlite3, zlib, hashlib, csv, json, re).
 """
 
+import argparse
 import csv
 import glob
 import hashlib
@@ -1287,7 +1288,7 @@ Original Light-UI-UX code and documentation are licensed under MIT. Third-party 
 
 ## Components
 
-The component index contains 1,140 entries: 876 with bundled source and 264 with metadata and an upstream link only. Bundled components retain license files inside their source maps where available. Additional full license texts are in [licenses/components](licenses/components).
+The component index contains @COMPONENT_TOTAL@ entries: @COMPONENT_SOURCE@ with bundled source and @COMPONENT_REFERENCE@ with metadata and an upstream link only. Bundled components retain license files inside their source maps where available. Additional full license texts are in [licenses/components](licenses/components).
 
 | Source | Bundled entries | License text |
 | --- | ---: | --- |
@@ -1302,6 +1303,8 @@ The component index contains 1,140 entries: 876 with bundled source and 264 with
 | Orb / shader components | 13 | [MIT](licenses/components/orb.txt) |
 | Public CodePen examples | 2 | [Example license](licenses/components/codepen.txt) |
 | Liquid Glass | 1 | [MIT](licenses/components/liquid-glass.txt) |
+
+@IMPORTED_COMPONENT_NOTICES@
 
 Reference-only entries do not bundle component source:
 
@@ -1345,13 +1348,50 @@ Additional methodology references include Interface Details, Emil Kowalski's des
 
 RIFT, NOCT, Meltday, and Veylo are fictional demonstration projects built with Light-UI-UX. Screenshots and original briefs are in [docs](docs); screenshots are examples of output rather than part of the reusable component library. The QR code assets in the README are supplied by the project author and reused from [Light-skills](https://github.com/Light0305/Light-skills).
 """
+    sources = stats.get("component_sources", [])
+    total = sum(row["entries"] for row in sources)
+    bundled = sum(row["full_source"] for row in sources)
+    if not sources:
+        raise ValueError("Component source counts are required to generate accurate notices.")
+    additions = []
+    for source in sources:
+        if source["site"] == "boardui":
+            additions.append(
+                f"**BoardUI ({source['entries']} source entries):** React components and foundations from "
+                "[BoardUI/boardui](https://github.com/BoardUI/boardui), revision "
+                "`ec5c5eb3e29c2441be63b9422cd54f411ef23466`, under [MIT](licenses/components/boardui.txt). "
+                "Each extraction includes its transitive local imports, shared CSS, the full upstream MIT notice and a source/dependency manifest. "
+                "Only source present in the public repository is bundled; Pro source and public demo media are not included."
+            )
+        if source["site"] == "leibox":
+            additions.append(
+                f"**LeiBox ({source['entries']} indexed entries; {source['full_source']} with source):** "
+                "catalog revision `42a55345cc9f53e6ab926a62527e0bc0ad9db7bc` from "
+                "[leishifu666/LeiBox](https://github.com/leishifu666/LeiBox). The explicitly MIT-attributed ASCII Sharks component "
+                "includes six framework packages, embedded font/icon notices and per-file SHA-256 verification. "
+                "Its original simulation credits drewdi / [stackedlol/ascii-sharks](https://github.com/stackedlol/ascii-sharks), "
+                "revision `a0074c16a106f0abc665fe9712ca445f8f98ad8e`. Live package hashes are recorded separately from the pinned catalog. "
+                "Other entries retain search metadata and upstream package/documentation URLs only. LeiBox's root MIT + Commons Clause "
+                "and per-item provenance do not establish a blanket redistribution license; the catalog's canRedistributeSource flag alone "
+                "is not treated as one. Full statements: [root license](licenses/components/leibox-LICENSE.md), "
+                "[source statement](licenses/components/leibox-COPYRIGHT.md)."
+            )
+    content = content.replace("@COMPONENT_TOTAL@", f"{total:,}")
+    content = content.replace("@COMPONENT_SOURCE@", f"{bundled:,}")
+    content = content.replace("@COMPONENT_REFERENCE@", f"{total - bundled:,}")
+    content = content.replace("@IMPORTED_COMPONENT_NOTICES@", "\n\n".join(additions))
     NOTICES_PATH.write_text(content, encoding="utf-8")
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--boardui", type=Path, help="Also import an inspected BoardUI snapshot")
+    parser.add_argument("--leibox", type=Path, help="Also import an inspected LeiBox catalog/package snapshot")
+    args = parser.parse_args()
     t0 = time.time()
     ASSETS_DIR.mkdir(parents=True, exist_ok=True)
-    resume = "--resume" in sys.argv and DB_PATH.exists()
+    resume = args.resume and DB_PATH.exists()
     if not resume and DB_PATH.exists():
         DB_PATH.unlink()
 
@@ -1396,6 +1436,15 @@ def main():
     print(f"      -> Shaders & Brands: {s_shd}")
     print(f"      -> Blueprints, Industry & Stacks: {s_bp}")
 
+    if args.boardui or args.leibox:
+        from import_components import board_entries, leibox_entries, import_entries
+        entries = []
+        if args.boardui:
+            entries.extend(board_entries(args.boardui))
+        if args.leibox:
+            entries.extend(leibox_entries(args.leibox))
+        print(f"[COMPONENT IMPORT] {import_entries(DB_PATH, entries)}")
+
     print("[VACUUM] Optimizing FTS5 indexes and compacting SQLite database pages...")
     cur = conn.cursor()
     for col in ["colors_json", "typography_json", "layout_json", "components_json", "steal_json"]:
@@ -1416,6 +1465,9 @@ def main():
     conn.commit()
     conn.execute("PRAGMA page_size = 1024;")
     conn.execute("VACUUM;")
+    component_sources = [dict(zip(("site", "entries", "full_source"), row)) for row in conn.execute(
+        "SELECT site, count(*), sum(redistribution_mode='full_source') FROM components GROUP BY site ORDER BY site"
+    )]
     conn.close()
 
     db_size_mb = round(DB_PATH.stat().st_size / (1024 * 1024), 2)
@@ -1424,6 +1476,7 @@ def main():
         "elapsed_sec": round(time.time() - t0, 2),
         "benchmarks": s_bench,
         "components": s_comp,
+        "component_sources": component_sources,
         "motions": s_mot,
         "icons": s_icon,
         "shaders_and_brands": s_shd,

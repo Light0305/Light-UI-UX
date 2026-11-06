@@ -103,13 +103,21 @@ Resources ship with the skill and are searched locally through SQLite full-text 
 | Resource | Count |
 | --- | ---: |
 | Website and award-site design references | 1,544 |
-| Interactive component entries | 1,140 |
+| Interactive component entries | 1,250 |
 | Motion prompts and recipes | 660 |
 | SVG icons | 33,253 |
 | Brand design systems | 152 |
 | Stack guidelines | 22 stacks |
 
 Component entries include extractable source and upstream links. Each resource retains its original license. See [SKILL.md](SKILL.md) for the workflow and [references](references) for detailed guidance.
+
+The component index includes **68 BoardUI source resources** for AI chat, application controls, data grids, settings and design foundations, plus **42 LeiBox interaction references**. LeiBox's explicitly MIT-attributed ASCII Sharks component includes complete React, Vue, Svelte, Solid, Preact and Vanilla packages; the other 41 entries link to their upstream resources. The full index has **945 source entries and 305 upstream references**. Bundles retain dependencies and source notices. [Usage and integration](references/09-component-sources.md).
+
+```sh
+python scripts/arsenal.py component "chat" --site boardui --framework react --mode full_source
+python scripts/arsenal.py component "drag" --site leibox --framework vue
+python scripts/arsenal.py component --id boardui-data-grid --extract ./staging
+```
 
 ### Custom image models
 
