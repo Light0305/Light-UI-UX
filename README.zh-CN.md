@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Light0305/Light-UI-UX/releases"><img src="https://img.shields.io/github/v/release/Light0305/Light-UI-UX?style=flat&amp;color=3358ec&amp;cacheSeconds=300" alt="Release"></a>
+  <a href="https://github.com/Light0305/Light-UI-UX/releases/latest"><img src="docs/assets/release.svg" alt="Release v1.0.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-202126?style=flat" alt="MIT License"></a>
   <a href="https://github.com/Light0305/Light-UI-UX/stargazers"><img src="https://img.shields.io/github/stars/Light0305/Light-UI-UX?style=flat&amp;color=202126" alt="GitHub Stars"></a>
 </p>
