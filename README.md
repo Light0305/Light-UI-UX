@@ -19,6 +19,8 @@
 
 Light-UI-UX is a UI/UX design skill for AI coding agents. Turn an idea into a working interface, or refine the layout, interactions, and details of an existing project. It works on websites, web apps, mobile apps, and individual components with agents including Codex, Claude Code, Cursor, and Windsurf.
 
+[Website](https://lightchuan.site/)
+
 ## Install
 
 ### Ask your agent
@@ -59,26 +61,26 @@ Include record previews, weekly arrivals, and store details. Choose the visual d
 
 ## Showcase
 
-Four projects, each built from one prompt in one conversation round. Click an image to read its original prompt.
+Four projects, each built from one prompt in one conversation round. Click an image to try the live demo. [Original prompts](docs/prompts/).
 
 <table>
   <tr>
     <td width="50%">
-      <a href="docs/prompts/rift.md"><img src="docs/assets/showcase/rift.webp" alt="RIFT: independent movement wear in bone white and vivid red" width="100%"></a>
+      <a href="https://lightchuan.site/demos/rift/"><img src="docs/assets/showcase/rift.webp" alt="RIFT: independent movement wear in bone white and vivid red" width="100%"></a>
       <strong>RIFT</strong> · Independent movement wear
     </td>
     <td width="50%">
-      <a href="docs/prompts/noct.md"><img src="docs/assets/showcase/noct.webp" alt="NOCT: a cinematic dark website for a portable projector" width="100%"></a>
+      <a href="https://lightchuan.site/demos/noct/"><img src="docs/assets/showcase/noct.webp" alt="NOCT: a cinematic dark website for a portable projector" width="100%"></a>
       <strong>NOCT</strong> · Portable cinema
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <a href="docs/prompts/meltday.md"><img src="docs/assets/showcase/meltday.webp" alt="Meltday: small-batch ice cream in pistachio green and cherry red" width="100%"></a>
+      <a href="https://lightchuan.site/demos/meltday/"><img src="docs/assets/showcase/meltday.webp" alt="Meltday: small-batch ice cream in pistachio green and cherry red" width="100%"></a>
       <strong>Meltday</strong> · Small-batch ice cream
     </td>
     <td width="50%">
-      <a href="docs/prompts/veylo.md"><img src="docs/assets/showcase/veylo.webp" alt="Veylo: a bright landing page for an AI website and app builder" width="100%"></a>
+      <a href="https://lightchuan.site/demos/veylo/"><img src="docs/assets/showcase/veylo.webp" alt="Veylo: a bright landing page for an AI website and app builder" width="100%"></a>
       <strong>Veylo</strong> · AI website &amp; app builder
     </td>
   </tr>

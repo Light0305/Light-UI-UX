@@ -19,6 +19,8 @@
 
 Light-UI-UX 是给 AI 编程工具用的 UI/UX 设计 Skill。从一句想法到可运行的界面，也能继续打磨已有项目的排版、交互和细节。适用于网站、Web 应用、移动应用和组件，支持 Codex、Claude Code、Cursor、Windsurf 等 Agent。
 
+[官网](https://lightchuan.site/)
+
 ## 安装
 
 ### 交给 Agent
@@ -59,26 +61,26 @@ Skill 脚本需要 **Python 3.10+**，无需安装第三方 Python 包。截图�
 
 ## 作品展示
 
-四个作品，均由一条提示词、一轮对话完成。点击图片查看原始提示词。
+四个作品，均由一条提示词、一轮对话完成。点击图片体验真实网页。[查看原始提示词](docs/prompts/)。
 
 <table>
   <tr>
     <td width="50%">
-      <a href="docs/prompts/rift.md"><img src="docs/assets/showcase/rift.webp" alt="RIFT：骨白与鲜红的独立运动服饰网站" width="100%"></a>
+      <a href="https://lightchuan.site/demos/rift/"><img src="docs/assets/showcase/rift.webp" alt="RIFT：骨白与鲜红的独立运动服饰网站" width="100%"></a>
       <strong>RIFT</strong> · 独立运动服饰
     </td>
     <td width="50%">
-      <a href="docs/prompts/noct.md"><img src="docs/assets/showcase/noct.webp" alt="NOCT：深色电影感的便携投影仪网站" width="100%"></a>
+      <a href="https://lightchuan.site/demos/noct/"><img src="docs/assets/showcase/noct.webp" alt="NOCT：深色电影感的便携投影仪网站" width="100%"></a>
       <strong>NOCT</strong> · 便携投影仪
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <a href="docs/prompts/meltday.md"><img src="docs/assets/showcase/meltday.webp" alt="Meltday：开心果绿与樱桃红的手作冰淇淋网站" width="100%"></a>
+      <a href="https://lightchuan.site/demos/meltday/"><img src="docs/assets/showcase/meltday.webp" alt="Meltday：开心果绿与樱桃红的手作冰淇淋网站" width="100%"></a>
       <strong>Meltday</strong> · 手作冰淇淋
     </td>
     <td width="50%">
-      <a href="docs/prompts/veylo.md"><img src="docs/assets/showcase/veylo.webp" alt="Veylo：明亮的 AI 建站与应用生成工具落地页" width="100%"></a>
+      <a href="https://lightchuan.site/demos/veylo/"><img src="docs/assets/showcase/veylo.webp" alt="Veylo：明亮的 AI 建站与应用生成工具落地页" width="100%"></a>
       <strong>Veylo</strong> · AI 建站与应用生成
     </td>
   </tr>
