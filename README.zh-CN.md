@@ -150,6 +150,7 @@ python scripts/arsenal.py component --id boardui-data-grid --extract ./staging
 - 邮箱：[1833058953@qq.com](mailto:1833058953@qq.com)
 - GitHub：[@Light0305](https://github.com/Light0305)
 - 欢迎 [Issue](https://github.com/Light0305/Light-UI-UX/issues)、PR 和使用反馈。
+- AI小店：[LightChuan-Shop](https://lightchuan.shop)
 
 <table align="center">
   <tr>
