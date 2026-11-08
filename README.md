@@ -150,6 +150,7 @@ The script supports **OpenAI Images-compatible endpoints**. Configuring an API d
 - Email: [1833058953@qq.com](mailto:1833058953@qq.com)
 - GitHub: [@Light0305](https://github.com/Light0305)
 - [Issues](https://github.com/Light0305/Light-UI-UX/issues), pull requests, and usage feedback are welcome.
+- AI Shop：[LightChuan-Shop](https://lightchuan.shop)
 
 <table align="center">
   <tr>
